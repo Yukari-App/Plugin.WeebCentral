@@ -303,13 +303,38 @@ public class WeebCentralSource : IComicSource
         return chapters;
     }
 
-    public Task<IReadOnlyList<ChapterPage>> GetChapterPagesAsync(
+    public async Task<IReadOnlyList<ChapterPage>> GetChapterPagesAsync(
         string comicId,
         string chapterId,
         CancellationToken ct = default
     )
     {
-        throw new NotImplementedException();
+        var pagesUrl =
+            $"{BaseUrl}/chapters/{chapterId}/images?is_prev=False&reading_style=long_strip";
+
+        var html = await GetHTMLAsync(pagesUrl, ct);
+        if (html == null)
+            return Array.Empty<ChapterPage>();
+
+        var doc = new HtmlDocument();
+        doc.LoadHtml(html);
+
+        var imgNodes = doc.DocumentNode.SelectNodes("//section//img");
+        if (imgNodes is not { Count: > 0 })
+            return Array.Empty<ChapterPage>();
+
+        var pages = new List<ChapterPage>(imgNodes.Count);
+        for (int i = 0; i < imgNodes.Count; i++)
+        {
+            var img = imgNodes[i];
+            string imageUrl = img.GetAttributeValue("src", "");
+            if (string.IsNullOrEmpty(imageUrl))
+                continue;
+
+            pages.Add(new ChapterPage(Number: i + 1, ImageUrl: imageUrl));
+        }
+
+        return pages;
     }
 
     public ValueTask DisposeAsync()
