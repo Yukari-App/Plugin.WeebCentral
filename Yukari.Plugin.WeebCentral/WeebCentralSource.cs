@@ -7,7 +7,7 @@ namespace Yukari.Plugin.WeebCentral;
 
 [ComicSourceMetadata(
     "WeebCentral",
-    "1.0.0+core2.2.0",
+    "1.1.0+core2.3.0",
     "https://github.com/Yukari-App/Plugin.WeebCentral/releases",
     "https://weebcentral.com/favicon.ico",
     "Access thousands of manga from WeebCentral's library."
@@ -110,7 +110,7 @@ public class WeebCentralSource : IComicSource
 
     static WeebCentralSource()
     {
-        _httpClient.DefaultRequestHeaders.UserAgent.ParseAdd("Yukari.Plugin.WeebCentral/1.0.0");
+        _httpClient.DefaultRequestHeaders.UserAgent.ParseAdd("Yukari.Plugin.WeebCentral/1.1.0");
     }
 
     public async Task<IReadOnlyList<Comic>> SearchAsync(
