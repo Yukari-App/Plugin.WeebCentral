@@ -143,30 +143,34 @@ public class WeebCentralSource : IComicSource
         if (articles is not { Count: > 0 })
             return Array.Empty<Comic>();
 
-        return articles
-            .Select(article =>
-            {
-                var titleLink = article.SelectSingleNode(".//a[contains(@class, 'link-hover')]");
-                var id = ExtractIdFromUrl(titleLink.GetAttributeValue("href", ""));
+        var comics = new List<Comic>();
+        foreach (var article in articles)
+        {
+            var titleLink = article.SelectSingleNode(".//a[contains(@class, 'link-hover')]");
 
-                if (id == null)
-                    return null;
+            var id = ExtractIdFromUrl(titleLink?.GetAttributeValue("href", ""));
+            if (id == null)
+                continue;
 
-                return new Comic(
+            var title = titleLink?.InnerText.Trim() ?? "Unknown Title";
+
+            comics.Add(
+                new Comic(
                     Id: id,
                     ComicUrl: null,
                     Slug: null,
-                    Title: titleLink.InnerText.Trim(),
+                    Title: title,
                     Author: null,
                     Description: null,
                     Tags: [],
                     Year: null,
                     CoverImageUrl: GetCoverUrl(id),
                     Langs: []
-                );
-            })
-            .Where(c => c != null)
-            .ToList()!;
+                )
+            );
+        }
+
+        return comics;
     }
 
     public async Task<IReadOnlyList<Comic>> GetTrendingAsync(
@@ -284,20 +288,20 @@ public class WeebCentralSource : IComicSource
                 if (DateTime.TryParse(dateStr, out DateTime dt))
                     lastUpdate = dt.ToLocalTime();
 
-            var chapter = new Chapter(
-                Id: chapterId,
-                Title: title,
-                Number: null,
-                Volume: null,
-                Language: language,
-                Groups: Array.Empty<string>(),
-                LastUpdate: lastUpdate.HasValue
-                    ? DateOnly.FromDateTime(lastUpdate.Value)
-                    : DateOnly.MinValue,
-                Pages: 0
+            chapters.Add(
+                new Chapter(
+                    Id: chapterId,
+                    Title: title,
+                    Number: null,
+                    Volume: null,
+                    Language: language,
+                    Groups: Array.Empty<string>(),
+                    LastUpdate: lastUpdate.HasValue
+                        ? DateOnly.FromDateTime(lastUpdate.Value)
+                        : DateOnly.MinValue,
+                    Pages: 0
+                )
             );
-
-            chapters.Add(chapter);
         }
 
         return chapters;
@@ -386,9 +390,11 @@ public class WeebCentralSource : IComicSource
         return parts.Length >= 2 ? parts[^2] : null;
     }
 
-    private string? ExtractChapterIdFromUrl(string url)
+    private string? ExtractChapterIdFromUrl(string? url)
     {
-        var parts = url.Split('/');
+        if (string.IsNullOrEmpty(url))
+            return null;
+        var parts = url.TrimEnd('/').Split('/');
         return parts.Length > 0 ? parts[^1] : null;
     }
 
