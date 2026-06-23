@@ -14,6 +14,7 @@ namespace Yukari.Plugin.WeebCentral;
 public class WeebCentralSource : IComicSource
 {
     private const int DefaultPageSize = 32;
+    private const string SourceLanguage = "en";
 
     private static IReadOnlyList<Filter>? _filters;
     private static IReadOnlyDictionary<string, string>? _languages;
@@ -183,9 +184,55 @@ public class WeebCentralSource : IComicSource
         return await SearchAsync(string.Empty, trendingFilters, page, ct);
     }
 
-    public Task<Comic?> GetDetailsAsync(string comicId, CancellationToken ct = default)
+    public async Task<Comic?> GetDetailsAsync(string comicId, CancellationToken ct = default)
     {
-        throw new NotImplementedException();
+        string detailsUrl = $"{BaseUrl}/series/{comicId}";
+
+        var html = await GetHTMLAsync(detailsUrl, ct);
+        if (html == null)
+            return null;
+
+        var doc = new HtmlDocument();
+        doc.LoadHtml(html);
+
+        var titleNode = doc.DocumentNode.SelectSingleNode("//h1[contains(@class, 'text-center')]");
+        string title = titleNode?.InnerText.Trim() ?? "Unknown Title";
+
+        var authorNodes = doc.DocumentNode.SelectNodes("//li[contains(., 'Author(s)')]//a");
+        string[] authors =
+            authorNodes?.Select(a => a.InnerText.Trim()).ToArray() ?? Array.Empty<string>();
+
+        var tagNodes = doc.DocumentNode.SelectNodes("//li[contains(., 'Tags(s)')]//a");
+        string[] tags =
+            tagNodes?.Select(t => t.InnerText.Trim()).ToArray() ?? Array.Empty<string>();
+
+        var statusNode = doc.DocumentNode.SelectSingleNode("//li[contains(., 'Status:')]//a");
+        ComicStatus status = GetComicStatus(statusNode?.InnerText.Trim());
+
+        var yearNode = doc.DocumentNode.SelectSingleNode("//li[contains(., 'Released:')]/span");
+        string yearStr = yearNode?.InnerText.Trim() ?? "";
+        int? year = int.TryParse(yearStr, out int y) ? y : null;
+
+        var descriptionNode = doc.DocumentNode.SelectSingleNode(
+            "//p[contains(@class, 'whitespace-pre-wrap')]"
+        );
+        string? description = descriptionNode?.InnerText.Trim();
+
+        string? coverUrl = GetCoverUrl(comicId);
+
+        return new Comic(
+            Id: comicId,
+            ComicUrl: detailsUrl,
+            Slug: null,
+            Title: title,
+            Author: authors.FirstOrDefault(),
+            Description: description,
+            Tags: tags,
+            Year: year,
+            coverUrl,
+            Langs: [SourceLanguage],
+            Status: status
+        );
     }
 
     public Task<IReadOnlyList<Chapter>> GetAllChaptersAsync(
@@ -229,6 +276,16 @@ public class WeebCentralSource : IComicSource
 
         return await response.Content.ReadAsStringAsync(ct);
     }
+
+    private ComicStatus GetComicStatus(string? status) =>
+        status switch
+        {
+            "Ongoing" => ComicStatus.Ongoing,
+            "Completed" => ComicStatus.Completed,
+            "Hiatus" => ComicStatus.Hiatus,
+            "Canceled" => ComicStatus.Cancelled,
+            _ => ComicStatus.Unknown,
+        };
 
     private string? GetCoverUrl(string? id)
     {
