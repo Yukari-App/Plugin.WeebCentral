@@ -9,8 +9,8 @@
     <AssemblyName>Yukari.Plugin.WeebCentral</AssemblyName>
     <RootNamespace>Yukari.Plugin.WeebCentral</RootNamespace>
 
-    <Version>0.1.0-Alpha+core2.2.0</Version>
-    <AssemblyVersion>0.1.0</AssemblyVersion>
+    <Version>1.0.0+core2.2.0</Version>
+    <AssemblyVersion>1.0.0</AssemblyVersion>
     <AssemblyFileVersion>$(AssemblyVersion)</AssemblyFileVersion>
     <AssemblyInformationalVersion>$(Version)</AssemblyInformationalVersion>
     <IncludeSourceRevisionInInformationalVersion>false</IncludeSourceRevisionInInformationalVersion>
@@ -18,8 +18,8 @@
     <AssemblyTitle>Yukari WeebCentral Plugin</AssemblyTitle>
     <AssemblyProduct>Yukari</AssemblyProduct>
     <Description>WeebCentral comic source plugin for Yukari.</Description>
-    <Copyright>Copyright © TXG0Fk3. All rights reserved.</Copyright>
-    <AssemblyCopyright>Copyright © TXG0Fk3. All rights reserved.</AssemblyCopyright>
+    <Copyright>Copyright © TXG0Fk3. Licensed under GPL-3.0.</Copyright>
+    <AssemblyCopyright>Copyright © TXG0Fk3. Licensed under GPL-3.0.</AssemblyCopyright>
   </PropertyGroup>
 
   <PropertyGroup Condition="'$(Configuration)' == 'Release'">
