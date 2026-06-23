@@ -77,7 +77,7 @@ public class WeebCentralSource : IComicSource
         {
             ["limit"] = [DefaultPageSize.ToString()],
             ["offset"] = [((page - 1) * DefaultPageSize).ToString()],
-            ["display_mode"] = ["Full Display"],
+            ["display_mode"] = ["Minimal Display"],
             ["text"] = [query],
         };
 
@@ -123,13 +123,19 @@ public class WeebCentralSource : IComicSource
             .ToList()!;
     }
 
-    public Task<IReadOnlyList<Comic>> GetTrendingAsync(
+    public async Task<IReadOnlyList<Comic>> GetTrendingAsync(
         IReadOnlyDictionary<string, IReadOnlyList<string>> filters,
         int page = 1,
         CancellationToken ct = default
     )
     {
-        throw new NotImplementedException();
+        var trendingFilters = new Dictionary<string, IReadOnlyList<string>>(filters)
+        {
+            ["order"] = ["Descending"],
+            ["sort"] = ["Popularity"],
+        };
+
+        return await SearchAsync(string.Empty, trendingFilters, page, ct);
     }
 
     public Task<Comic?> GetDetailsAsync(string comicId, CancellationToken ct = default)
