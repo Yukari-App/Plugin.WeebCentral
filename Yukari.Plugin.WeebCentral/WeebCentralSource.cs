@@ -7,7 +7,7 @@ namespace Yukari.Plugin.WeebCentral;
 
 [ComicSourceMetadata(
     "WeebCentral",
-    "1.1.0+core2.3.0",
+    "1.1.1+core2.3.0",
     "https://github.com/Yukari-App/Plugin.WeebCentral/releases",
     "https://weebcentral.com/favicon.ico",
     "Access thousands of manga from WeebCentral's library."
@@ -300,7 +300,7 @@ public class WeebCentralSource : IComicSource
                     LastUpdate: lastUpdate.HasValue
                         ? DateOnly.FromDateTime(lastUpdate.Value)
                         : DateOnly.MinValue,
-                    Pages: 0
+                    Pages: null
                 )
             );
         }

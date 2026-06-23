@@ -9,8 +9,8 @@
     <AssemblyName>Yukari.Plugin.WeebCentral</AssemblyName>
     <RootNamespace>Yukari.Plugin.WeebCentral</RootNamespace>
 
-    <Version>1.1.0+core2.3.0</Version>
-    <AssemblyVersion>1.1.0</AssemblyVersion>
+    <Version>1.1.1+core2.3.0</Version>
+    <AssemblyVersion>1.1.1</AssemblyVersion>
     <AssemblyFileVersion>$(AssemblyVersion)</AssemblyFileVersion>
     <AssemblyInformationalVersion>$(Version)</AssemblyInformationalVersion>
     <IncludeSourceRevisionInInformationalVersion>false</IncludeSourceRevisionInInformationalVersion>
