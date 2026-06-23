@@ -41,6 +41,7 @@ Built for the **[Yukari](https://github.com/Yukari-App/Yukari)** Windows reader 
 - **Languages**: Only English.
 - **Performance**: Lazy static filters/languages, shared `HttpClient` with custom User-Agent.
 - **Errors**: Returns empty results instead of crashing on API issues (e.g., invalid ID).
+- **Page count**: The total number of pages isn't available until a chapter is opened. A `?` is shown in the chapter list until then.
 - **Stack**: Use [HtmlAgilityPack](https://www.nuget.org/packages/HtmlAgilityPack/) for web scraping and [ILRepack.Lib.MSBuild.Task](https://www.nuget.org/packages/ILRepack.Lib.MSBuild.Task) to merge assemblies.
 
 <div align="center">
