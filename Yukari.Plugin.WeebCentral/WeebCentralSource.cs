@@ -235,13 +235,72 @@ public class WeebCentralSource : IComicSource
         );
     }
 
-    public Task<IReadOnlyList<Chapter>> GetAllChaptersAsync(
+    public async Task<IReadOnlyList<Chapter>> GetAllChaptersAsync(
         string comicId,
         string language,
         CancellationToken ct = default
     )
     {
-        throw new NotImplementedException();
+        var chaptersUrl = $"{BaseUrl}/series/{comicId}/full-chapter-list";
+
+        var html = await GetHTMLAsync(chaptersUrl, ct);
+        if (html == null)
+            return Array.Empty<Chapter>();
+
+        var doc = new HtmlDocument();
+        doc.LoadHtml(html);
+
+        var chapterNodes = doc.DocumentNode.SelectNodes(
+            "//div[contains(@class, 'flex items-center')]//a[contains(@href, '/chapters/')]/.."
+        );
+
+        if (chapterNodes is not { Count: > 0 })
+            return Array.Empty<Chapter>();
+
+        var chapters = new List<Chapter>();
+
+        // WeebCentral returns chapters in descending order (newest first).
+        // Reverse to get chronological order (oldest first).
+        foreach (var node in chapterNodes.Reverse())
+        {
+            var linkNode = node.SelectSingleNode(".//a[contains(@href, '/chapters/')]");
+            if (linkNode == null)
+                continue;
+
+            string href = linkNode.GetAttributeValue("href", "");
+            string? chapterId = ExtractChapterIdFromUrl(href);
+            if (string.IsNullOrEmpty(chapterId))
+                continue;
+
+            var titleSpan = linkNode.SelectSingleNode(".//span[contains(@class, 'grow')]//span");
+            string title = titleSpan?.InnerText.Trim() ?? "Unknown";
+
+            var timeNode = linkNode.SelectSingleNode(".//time");
+            string? dateStr =
+                timeNode?.GetAttributeValue("datetime", null!) ?? timeNode?.InnerText.Trim();
+
+            DateTime? lastUpdate = null;
+            if (!string.IsNullOrEmpty(dateStr))
+                if (DateTime.TryParse(dateStr, out DateTime dt))
+                    lastUpdate = dt.ToLocalTime();
+
+            var chapter = new Chapter(
+                Id: chapterId,
+                Title: title,
+                Number: null,
+                Volume: null,
+                Language: language,
+                Groups: Array.Empty<string>(),
+                LastUpdate: lastUpdate.HasValue
+                    ? DateOnly.FromDateTime(lastUpdate.Value)
+                    : DateOnly.MinValue,
+                Pages: 0
+            );
+
+            chapters.Add(chapter);
+        }
+
+        return chapters;
     }
 
     public Task<IReadOnlyList<ChapterPage>> GetChapterPagesAsync(
@@ -300,6 +359,12 @@ public class WeebCentralSource : IComicSource
             return null;
         var parts = url.TrimEnd('/').Split('/');
         return parts.Length >= 2 ? parts[^2] : null;
+    }
+
+    private string? ExtractChapterIdFromUrl(string url)
+    {
+        var parts = url.Split('/');
+        return parts.Length > 0 ? parts[^1] : null;
     }
 
     private static string ToQueryString(Dictionary<string, string[]> source) =>
