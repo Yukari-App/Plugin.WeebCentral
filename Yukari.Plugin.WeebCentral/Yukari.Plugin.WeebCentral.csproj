@@ -30,10 +30,10 @@
 
   <ItemGroup>
     <PackageReference Include="HtmlAgilityPack" Version="1.12.4" />
-    <PackageReference Include="ILRepack.Lib.MSBuild.Task" Version="2.0.45">
+    <PackageReference Include="ILRepack.Lib.MSBuild.Task" Version="2.0.46">
       <PrivateAssets>all</PrivateAssets>
       <IncludeAssets>runtime; build; native; contentfiles; analyzers; buildtransitive</IncludeAssets>
     </PackageReference>
-    <PackageReference Include="Yukari.Core" Version="2.3.0" />
+    <PackageReference Include="Yukari.Core" Version="2.4.0" />
   </ItemGroup>
 </Project>
