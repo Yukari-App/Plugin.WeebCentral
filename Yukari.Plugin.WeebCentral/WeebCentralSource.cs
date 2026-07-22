@@ -1,4 +1,4 @@
-﻿using System.Net;
+using System.Net;
 using HtmlAgilityPack;
 using Yukari.Core.Models;
 using Yukari.Core.Sources;
@@ -7,7 +7,7 @@ namespace Yukari.Plugin.WeebCentral;
 
 [ComicSourceMetadata(
     "WeebCentral",
-    "1.1.1+core2.3.0",
+    "1.2.0+core2.4.0",
     "https://github.com/Yukari-App/Plugin.WeebCentral/releases",
     "https://weebcentral.com/favicon.ico",
     "Access thousands of manga from WeebCentral's library."
