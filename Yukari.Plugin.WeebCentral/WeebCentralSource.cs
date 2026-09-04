@@ -2,12 +2,13 @@ using System.Net;
 using HtmlAgilityPack;
 using Yukari.Core.Models;
 using Yukari.Core.Sources;
+using Yukari.Core.Sources.Http;
 
 namespace Yukari.Plugin.WeebCentral;
 
 [ComicSourceMetadata(
     "WeebCentral",
-    "1.2.0+core2.4.0",
+    "1.3.0+core2.5.0",
     "https://github.com/Yukari-App/Plugin.WeebCentral/releases",
     "https://weebcentral.com/favicon.ico",
     "Access thousands of manga from WeebCentral's library."
@@ -156,7 +157,6 @@ public class WeebCentralSource : IComicSource, IRequiresHttpClient
                 new Comic(
                     Id: id,
                     ComicUrl: null,
-                    Slug: null,
                     Title: title,
                     Author: null,
                     Description: null,
@@ -225,7 +225,6 @@ public class WeebCentralSource : IComicSource, IRequiresHttpClient
         return new Comic(
             Id: comicId,
             ComicUrl: detailsUrl,
-            Slug: null,
             Title: title,
             Author: authors.FirstOrDefault(),
             Description: description,
@@ -281,10 +280,10 @@ public class WeebCentralSource : IComicSource, IRequiresHttpClient
             string? dateStr =
                 timeNode?.GetAttributeValue("datetime", null!) ?? timeNode?.InnerText.Trim();
 
-            DateTime? lastUpdate = null;
+            DateOnly? lastUpdate = null;
             if (!string.IsNullOrEmpty(dateStr))
                 if (DateTime.TryParse(dateStr, out DateTime dt))
-                    lastUpdate = dt.ToLocalTime();
+                    lastUpdate = DateOnly.FromDateTime(dt.ToLocalTime());
 
             chapters.Add(
                 new Chapter(
@@ -294,9 +293,7 @@ public class WeebCentralSource : IComicSource, IRequiresHttpClient
                     Volume: null,
                     Language: language,
                     Groups: Array.Empty<string>(),
-                    LastUpdate: lastUpdate.HasValue
-                        ? DateOnly.FromDateTime(lastUpdate.Value)
-                        : DateOnly.MinValue,
+                    LastUpdate: lastUpdate,
                     Pages: null
                 )
             );
