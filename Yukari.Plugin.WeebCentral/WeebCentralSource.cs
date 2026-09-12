@@ -390,7 +390,7 @@ public class WeebCentralSource : IComicSource, IRequiresHttpClient
         status switch
         {
             "Ongoing" => ComicStatus.Ongoing,
-            "Completed" => ComicStatus.Completed,
+            "Complete" => ComicStatus.Completed,
             "Hiatus" => ComicStatus.Hiatus,
             "Canceled" => ComicStatus.Cancelled,
             _ => ComicStatus.Unknown,
