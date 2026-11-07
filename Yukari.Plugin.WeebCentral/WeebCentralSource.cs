@@ -8,7 +8,7 @@ namespace Yukari.Plugin.WeebCentral;
 
 [ComicSourceMetadata(
     "WeebCentral",
-    "1.3.1+core2.5.0",
+    "1.4.0+core2.6.0",
     "https://github.com/Yukari-App/Plugin.WeebCentral/releases",
     "https://weebcentral.com/favicon.ico",
     "Access thousands of manga from WeebCentral's library."
